@@ -2,7 +2,7 @@ defmodule Ecto.TypeTest do
   use ExUnit.Case, async: true
 
   import Ecto.Type
-  alias Ecto.Adapters.{MyXQL, Postgres, Tds}
+  alias Ecto.Adapters.{MyXQL, Postgres, Tds, Sqlite}
 
   @uuid_string "bfe0888c-5c59-4bb3-adfd-71f0b85d3db7"
   @uuid_binary <<191, 224, 136, 140, 92, 89, 75, 179, 173, 253, 113, 240, 184, 93, 61, 183>>
@@ -18,6 +18,9 @@ defmodule Ecto.TypeTest do
 
     assert adapter_dump(Tds, {:map, Elixir.Tds.Ecto.UUID}, %{"a" => @uuid_string}) ==
            {:ok, %{"a" => @uuid_string}}
+
+    assert adapter_dump(Sqlite, {:map, Ecto.UUID}, %{"a" => @uuid_string}) ==
+           {:ok, %{"a" => @uuid_string}}
   end
 
   # Therefore we need to support both binaries and strings when loading
@@ -28,6 +31,9 @@ defmodule Ecto.TypeTest do
     assert adapter_load(Postgres, {:map, Ecto.UUID}, %{"a" => @uuid_binary}) ==
            {:ok, %{"a" => @uuid_string}}
 
+    assert adapter_load(Sqlite, {:map, Ecto.UUID}, %{"a" => @uuid_binary}) ==
+           {:ok, %{"a" => @uuid_string}}
+
     assert adapter_load(Tds, {:map, Elixir.Tds.Ecto.UUID}, %{"a" => @mssql_uuid_binary}) ==
            {:ok, %{"a" => @uuid_string}}
 
@@ -35,6 +41,9 @@ defmodule Ecto.TypeTest do
            {:ok, %{"a" => @uuid_string}}
 
     assert adapter_load(Postgres, {:map, Ecto.UUID}, %{"a" => @uuid_string}) ==
+           {:ok, %{"a" => @uuid_string}}
+
+    assert adapter_load(Sqlite, {:map, Ecto.UUID}, %{"a" => @uuid_string}) ==
            {:ok, %{"a" => @uuid_string}}
 
     assert adapter_load(Tds, {:map, Elixir.Tds.Ecto.UUID}, %{"a" => @uuid_string}) ==

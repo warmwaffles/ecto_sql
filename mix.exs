@@ -3,7 +3,7 @@ defmodule EctoSQL.MixProject do
 
   @source_url "https://github.com/elixir-ecto/ecto_sql"
   @version "3.6.0-dev"
-  @adapters ~w(pg myxql tds)
+  @adapters ~w(pg myxql tds sqlite)
 
   def project do
     [
@@ -60,6 +60,7 @@ defmodule EctoSQL.MixProject do
       postgrex_dep(),
       myxql_dep(),
       tds_dep(),
+      sqlite_dep(),
 
       # Bring something in for JSON during tests
       {:jason, ">= 0.0.0", only: [:test, :docs]},
@@ -102,6 +103,14 @@ defmodule EctoSQL.MixProject do
       {:tds, path: path}
     else
       {:tds, "~> 2.1.1", optional: true}
+    end
+  end
+
+  defp sqlite_dep do
+    if path = System.get_env("SQLITEX_PATH") do
+      {:sqlitex, path: path}
+    else
+      {:sqlitex, "~> 1.7.1", optional: true}
     end
   end
 
@@ -186,7 +195,8 @@ defmodule EctoSQL.MixProject do
         "Built-in adapters": [
           Ecto.Adapters.MyXQL,
           Ecto.Adapters.Tds,
-          Ecto.Adapters.Postgres
+          Ecto.Adapters.Postgres,
+          Ecto.Adapters.Sqlite,
         ],
         "Adapter specification": [
           Ecto.Adapter.Migration,
